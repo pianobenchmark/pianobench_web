@@ -1,0 +1,2508 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="PianoBench is a diagnostic benchmark for musical and audio-visual fidelity in text-to-video generation.">
+  <meta name="color-scheme" content="light">
+  <title>PianoBench — Musical and Audio-Visual Fidelity in Text-to-Video</title>
+  <style>
+    :root {
+      --ink: #202124;
+      --ink-soft: #5f6368;
+      --midnight: #202124;
+      --paper: #ffffff;
+      --ivory: #f6f6f4;
+      --line: #d8d8d4;
+      --brass: #55606b;
+      --white: #ffffff;
+      --shadow-sm: none;
+      --radius-md: 6px;
+      --container: 1160px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 88px;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: clip;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      text-rendering: optimizeLegibility;
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    img,
+    video {
+      display: block;
+      max-width: 100%;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.12;
+      letter-spacing: -0.035em;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 1000;
+      top: 12px;
+      left: 12px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--midnight);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-160%);
+      transition: transform 160ms ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--brass);
+      outline-offset: 3px;
+    }
+
+    .container {
+      width: min(calc(100% - 40px), var(--container));
+      margin-inline: auto;
+    }
+
+    .section {
+      padding: 80px 0;
+      scroll-margin-top: 78px;
+    }
+
+    .section--compact {
+      padding: 56px 0;
+    }
+
+    .section--ivory {
+      background: var(--ivory);
+    }
+
+    .section--dark {
+      background: var(--ivory);
+      color: var(--ink);
+    }
+
+    .eyebrow {
+      display: block;
+      margin-bottom: 12px;
+      color: #687078;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      display: none;
+    }
+
+    .section--dark .eyebrow,
+    .hero .eyebrow {
+      color: #687078;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr);
+      gap: 48px;
+      align-items: end;
+      margin-bottom: 38px;
+    }
+
+    .section-heading h2 {
+      max-width: 720px;
+      margin-bottom: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 500;
+    }
+
+    .section-heading p {
+      margin-bottom: 4px;
+      color: var(--ink-soft);
+      font-size: 1.05rem;
+    }
+
+    .section--dark .section-heading p {
+      color: var(--ink-soft);
+    }
+
+    .site-nav {
+      position: sticky;
+      z-index: 100;
+      top: 0;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-inner {
+      display: flex;
+      min-height: 72px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--midnight);
+      font-size: 0.95rem;
+      font-weight: 850;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      grid-template-columns: repeat(4, 1fr);
+      overflow: hidden;
+      border: 2px solid var(--midnight);
+      border-radius: 5px;
+      background: white;
+    }
+
+    .brand-mark span {
+      position: relative;
+      border-right: 1px solid rgba(17, 24, 39, 0.3);
+    }
+
+    .brand-mark span:nth-child(1)::after,
+    .brand-mark span:nth-child(3)::after {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      right: -3px;
+      width: 5px;
+      height: 20px;
+      border-radius: 0 0 2px 2px;
+      background: var(--midnight);
+      content: "";
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-links a {
+      position: relative;
+      color: #3f4858;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .nav-links a::after {
+      position: absolute;
+      right: 0;
+      bottom: -8px;
+      left: 0;
+      height: 1px;
+      background: var(--ink);
+      content: "";
+      transform: scaleX(0);
+      transition: transform 180ms ease;
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a:focus-visible::after {
+      transform: scaleX(1);
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--midnight);
+      cursor: pointer;
+    }
+
+    .menu-toggle svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 68px 0 64px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .hero::after {
+      display: none;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    .hero-grid>*,
+    .hero-copy {
+      max-width: 820px;
+      min-width: 0;
+    }
+
+    .hero-copy h1 {
+      max-width: none;
+      margin-bottom: 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3rem, 7vw, 4.8rem);
+      font-weight: 500;
+      letter-spacing: -0.055em;
+    }
+
+    .hero-deck {
+      max-width: 760px;
+      margin-bottom: 30px;
+      color: var(--ink-soft);
+      font-size: clamp(1.05rem, 2vw, 1.22rem);
+      line-height: 1.55;
+    }
+
+    .hero-stats {
+      display: grid;
+      max-width: 760px;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-stat {
+      padding: 19px 14px 17px 0;
+    }
+
+    .hero-stat+.hero-stat {
+      padding-left: 18px;
+      border-left: 1px solid var(--line);
+    }
+
+    .hero-stat strong {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 1.3rem;
+      font-weight: 650;
+      line-height: 1;
+    }
+
+    .hero-stat span {
+      color: var(--ink-soft);
+      font-size: 0.75rem;
+      font-weight: 650;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .abstract-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.52fr) minmax(0, 1fr);
+      gap: 56px;
+      align-items: start;
+    }
+
+    .abstract-title {
+      position: sticky;
+      top: 112px;
+    }
+
+    .abstract-title h2 {
+      margin-bottom: 22px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 500;
+    }
+
+    .abstract-title p {
+      color: var(--ink-soft);
+    }
+
+    .abstract-copy {
+      font-family: inherit;
+      font-size: clamp(1.08rem, 2vw, 1.28rem);
+      line-height: 1.58;
+    }
+
+    .abstract-copy strong {
+      color: inherit;
+      font-weight: 650;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 48px;
+    }
+
+    .metric-card {
+      position: relative;
+      min-height: 230px;
+      overflow: hidden;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: white;
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 38px;
+    }
+
+    .metric-index {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: var(--ivory);
+      color: var(--ink-soft);
+      font-size: 0.76rem;
+      font-weight: 900;
+    }
+
+    .metric-weight {
+      color: var(--ink-soft);
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .metric-card h3 {
+      margin-bottom: 12px;
+      font-size: 1.28rem;
+    }
+
+    .metric-card p {
+      max-width: 290px;
+      margin-bottom: 0;
+      color: var(--ink-soft);
+      font-size: 0.93rem;
+    }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task-card {
+      position: relative;
+      min-height: 310px;
+      overflow: hidden;
+      padding: 26px;
+      border: 1px solid rgba(222, 216, 204, 0.9);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .task-card:hover {
+      box-shadow: none;
+      transform: none;
+    }
+
+    .task-card:nth-child(1),
+    .task-card:nth-child(2) {
+      grid-column: span 3;
+    }
+
+    .task-card:nth-child(n+3) {
+      grid-column: span 2;
+    }
+
+    .task-number {
+      display: inline-flex;
+      margin-bottom: 52px;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink-soft);
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .task-card h3 {
+      margin-bottom: 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.65rem;
+      font-weight: 500;
+    }
+
+    .task-card p {
+      max-width: 420px;
+      margin-bottom: 24px;
+      color: var(--ink-soft);
+      font-size: 0.91rem;
+    }
+
+    .target {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 9px;
+      color: var(--ink);
+      font-size: 0.82rem;
+      font-weight: 850;
+      letter-spacing: 0.02em;
+    }
+
+    .target code {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--midnight);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.78rem;
+    }
+
+    .leaderboard-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      box-shadow: none;
+    }
+
+    .leaderboard-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .leaderboard-toolbar h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .metric-switcher {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--ivory);
+    }
+
+    .metric-switcher button {
+      min-height: 34px;
+      padding: 0 13px;
+      border: 0;
+      border-radius: 3px;
+      background: transparent;
+      color: var(--ink-soft);
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .metric-switcher button[aria-pressed="true"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .leaderboard {
+      padding: 14px 28px 28px;
+    }
+
+    .leaderboard-head,
+    .leader-row {
+      display: grid;
+      grid-template-columns: 42px minmax(150px, 0.55fr) minmax(220px, 1fr) 70px;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .leaderboard-head {
+      padding: 11px 0;
+      color: var(--ink-soft);
+      font-size: 0.65rem;
+      font-weight: 850;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .leader-row {
+      min-height: 62px;
+      border-top: 1px solid var(--line);
+    }
+
+    .leader-rank {
+      color: var(--ink-soft);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.78rem;
+    }
+
+    .leader-model {
+      color: var(--ink);
+      font-size: 0.9rem;
+      font-weight: 760;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e4e5e3;
+    }
+
+    .bar-fill {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: #68727c;
+      transition: width 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .leader-value {
+      color: var(--ink);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.86rem;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .results-note {
+      max-width: 850px;
+      margin: 20px 0 0;
+      color: var(--ink-soft);
+      font-size: 0.8rem;
+    }
+
+    .demo-shell {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      box-shadow: none;
+    }
+
+    .model-tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--ivory);
+      scrollbar-width: thin;
+    }
+
+    .model-tab {
+      flex: 0 0 auto;
+      min-height: 39px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--paper);
+      color: var(--ink-soft);
+      font-size: 0.77rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .model-tab[aria-selected="true"] {
+      border-color: var(--midnight);
+      background: var(--midnight);
+      color: var(--paper);
+    }
+
+    .level-tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+      scrollbar-width: thin;
+    }
+
+    .level-tab {
+      flex: 0 0 auto;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--paper);
+      color: var(--ink-soft);
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .level-tab[aria-selected="true"] {
+      border-color: var(--brass);
+      background: var(--ivory);
+      color: var(--ink);
+    }
+
+    .demo-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(290px, 0.72fr);
+    }
+
+    .video-panel {
+      padding: 20px;
+      background: #0c1220;
+    }
+
+    .video-frame {
+      position: relative;
+      overflow: hidden;
+      border-radius: 3px;
+      background: #05080e;
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .video-label {
+      position: absolute;
+      z-index: 2;
+      top: 14px;
+      left: 14px;
+      padding: 6px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 3px;
+      background: rgba(8, 13, 23, 0.72);
+      color: white;
+      font-size: 0.66rem;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+    }
+
+    .prompt-panel {
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      border-left: 1px solid var(--line);
+    }
+
+    .prompt-id {
+      display: inline-flex;
+      align-self: flex-start;
+      margin-bottom: 20px;
+      padding: 6px 9px;
+      border-radius: 7px;
+      background: var(--ivory);
+      color: var(--ink);
+      font-size: 0.67rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .prompt-panel h3 {
+      margin-bottom: 12px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem;
+      font-weight: 500;
+    }
+
+    .prompt-summary {
+      margin-bottom: 25px;
+      color: var(--ink-soft);
+      font-size: 0.88rem;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      grid-template-columns: 3fr 0.5fr 0.55fr;
+      min-height: 45px;
+      margin: 4px 0 26px;
+      align-items: end;
+    }
+
+    .timeline::before {
+      position: absolute;
+      right: 0;
+      bottom: 11px;
+      left: 0;
+      height: 2px;
+      background: var(--line);
+      content: "";
+    }
+
+    .timeline-part {
+      position: relative;
+      z-index: 1;
+      padding-bottom: 19px;
+      color: var(--ink-soft);
+      font-size: 0.63rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .timeline-part::after {
+      position: absolute;
+      bottom: 6px;
+      left: 0;
+      width: 11px;
+      height: 11px;
+      border: 2px solid white;
+      border-radius: 50%;
+      background: #68727c;
+      box-shadow: 0 0 0 1px #68727c;
+      content: "";
+    }
+
+    .timeline-part:nth-child(2)::after {
+      background: #68727c;
+      box-shadow: 0 0 0 1px #68727c;
+    }
+
+    .timeline-part:nth-child(3)::after {
+      background: #68727c;
+      box-shadow: 0 0 0 1px #68727c;
+    }
+
+    .selected-model {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: auto;
+      margin-bottom: 14px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .selected-model span {
+      color: var(--ink-soft);
+      font-size: 0.67rem;
+      font-weight: 850;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .selected-model strong {
+      font-size: 1rem;
+    }
+
+    .demo-scores {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .demo-score {
+      padding: 11px;
+      border-radius: 4px;
+      background: var(--ivory);
+    }
+
+    .demo-score span {
+      display: block;
+      color: var(--ink-soft);
+      font-size: 0.6rem;
+      font-weight: 850;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .demo-score strong {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.9rem;
+    }
+
+    .storyboard-wrap {
+      padding: 22px 20px 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .storyboard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 12px;
+    }
+
+    .storyboard-head strong {
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+    }
+
+    .storyboard-head span {
+      color: var(--ink-soft);
+      font-size: 0.7rem;
+    }
+
+    .storyboard {
+      display: flex;
+      overflow-x: auto;
+      gap: 9px;
+      padding: 2px 2px 10px;
+      scrollbar-width: thin;
+    }
+
+    .story-frame {
+      position: relative;
+      flex: 0 0 160px;
+      overflow: hidden;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 3px;
+      background: #111827;
+      cursor: pointer;
+      aspect-ratio: 16 / 9;
+    }
+
+    .story-frame[aria-current="true"] {
+      border-color: #68727c;
+    }
+
+    .story-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .story-frame time {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      background: rgba(5, 9, 16, 0.78);
+      color: white;
+      font-size: 0.56rem;
+      font-weight: 800;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: 0.8fr 50px 1fr 50px 0.8fr;
+      gap: 14px;
+      align-items: stretch;
+      margin-bottom: 52px;
+    }
+
+    .pipeline-node {
+      display: flex;
+      min-height: 155px;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+    }
+
+    .pipeline-node--input {
+      background: var(--paper);
+    }
+
+    .pipeline-node--output {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .pipeline-node small {
+      color: var(--ink-soft);
+      font-size: 0.64rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .pipeline-node--output small {
+      color: var(--ink-soft);
+    }
+
+    .pipeline-node strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.35rem;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .pipeline-node span {
+      color: var(--ink-soft);
+      font-size: 0.77rem;
+    }
+
+    .pipeline-node--output span {
+      color: var(--ink-soft);
+    }
+
+    .pipeline-fork {
+      display: grid;
+      gap: 10px;
+    }
+
+    .pipeline-fork .pipeline-node {
+      min-height: 72px;
+      padding: 16px 18px;
+    }
+
+    .pipeline-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--ink-soft);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .method-card {
+      padding: 27px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+    }
+
+    .method-card .method-weight {
+      display: inline-flex;
+      margin-bottom: 26px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.74rem;
+      font-weight: 850;
+    }
+
+    .method-card h3 {
+      margin-bottom: 10px;
+      font-size: 1.15rem;
+    }
+
+    .method-card p {
+      margin-bottom: 0;
+      color: var(--ink-soft);
+      font-size: 0.87rem;
+    }
+
+    .formula {
+      display: flex;
+      margin-top: 18px;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      color: #3d4655;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: clamp(0.78rem, 2vw, 1rem);
+      text-align: center;
+    }
+
+    .formula strong {
+      color: var(--ink);
+    }
+
+    .scope-grid {
+      display: grid;
+      grid-template-columns: 0.68fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .scope-grid h2 {
+      margin-bottom: 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 500;
+    }
+
+    .scope-grid>div:first-child p {
+      color: var(--ink-soft);
+    }
+
+    .limit-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .limit-list li {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      color: var(--ink-soft);
+      font-size: 0.88rem;
+    }
+
+    .limit-list span {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.7rem;
+      font-weight: 850;
+    }
+
+    .site-footer {
+      padding: 26px 0;
+      border-top: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink-soft);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 0.72rem;
+    }
+
+    .footer-inner strong {
+      color: var(--ink);
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 1040px) {
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(360px, 0.72fr);
+        gap: 40px;
+      }
+
+    }
+
+    @media (max-width: 880px) {
+      .section {
+        padding: 64px 0;
+      }
+
+      .hero {
+        padding-top: 58px;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy {
+        max-width: 720px;
+      }
+
+      .section-heading,
+      .abstract-grid,
+      .scope-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
+      .abstract-title {
+        position: static;
+      }
+
+      .metric-grid,
+      .method-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-card {
+        min-height: auto;
+      }
+
+      .demo-main {
+        grid-template-columns: 1fr;
+      }
+
+      .prompt-panel {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .pipeline {
+        grid-template-columns: 1fr;
+      }
+
+      .pipeline-arrow {
+        min-height: 30px;
+        transform: rotate(90deg);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        width: min(calc(100% - 28px), var(--container));
+      }
+
+      .menu-toggle {
+        display: inline-flex;
+      }
+
+      .nav-links {
+        position: fixed;
+        z-index: 99;
+        top: 72px;
+        right: 0;
+        left: 0;
+        display: none;
+        min-height: calc(100vh - 72px);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding: 26px 22px;
+        background: rgba(255, 254, 251, 0.98);
+      }
+
+      .nav-links[data-open="true"] {
+        display: flex;
+      }
+
+      .nav-links li {
+        width: 100%;
+      }
+
+      .nav-links a {
+        display: block;
+        padding: 14px 4px;
+      }
+
+      .hero {
+        padding: 52px 0 48px;
+      }
+
+      .hero-copy h1 {
+        font-size: clamp(2.8rem, 14vw, 3.7rem);
+      }
+
+      .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero-stat:nth-child(3) {
+        padding-left: 0;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .hero-stat:nth-child(4) {
+        border-top: 1px solid var(--line);
+      }
+
+      .section-heading {
+        margin-bottom: 36px;
+      }
+
+      .task-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .task-card:nth-child(n) {
+        min-height: auto;
+        grid-column: span 1;
+      }
+
+      .task-number {
+        margin-bottom: 28px;
+      }
+
+      .leaderboard-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .metric-switcher {
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .leaderboard {
+        padding-inline: 18px;
+      }
+
+      .leaderboard-head,
+      .leader-row {
+        grid-template-columns: 30px minmax(120px, 0.7fr) minmax(100px, 1fr) 56px;
+        gap: 10px;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+      .leaderboard-head,
+      .leader-row {
+        grid-template-columns: 26px minmax(112px, 1fr) 54px;
+      }
+
+      .leaderboard-head span:nth-child(3),
+      .bar-track {
+        display: none;
+      }
+
+      .video-panel {
+        padding: 10px;
+      }
+
+      .prompt-panel {
+        padding: 24px 20px;
+      }
+
+      .story-frame {
+        flex-basis: 132px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    /* Prompt 1A frame comparison */
+    .frame-comparison {
+      margin: 0 0 54px;
+    }
+
+    .frame-comparison-scroll {
+      overflow-x: auto;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      scrollbar-width: thin;
+    }
+
+    .frame-comparison-table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .frame-comparison-table col:first-child {
+      width: 148px;
+    }
+
+    .frame-comparison-table th,
+    .frame-comparison-table td {
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    .frame-comparison-table thead th {
+      padding: 11px 6px;
+      border-top: 0;
+      color: var(--ink-soft);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .frame-comparison-table thead th:first-child,
+    .frame-comparison-table tbody th {
+      padding-left: 0;
+    }
+
+    .frame-comparison-table thead th:first-child {
+      position: sticky;
+      z-index: 2;
+      left: 0;
+      background: var(--paper);
+    }
+
+    .frame-comparison-table thead th:last-child,
+    .frame-comparison-table tbody td:last-child {
+      padding-right: 0;
+    }
+
+    .frame-comparison-table tbody th {
+      position: sticky;
+      z-index: 1;
+      left: 0;
+      padding: 23px 12px 18px 0;
+      background: var(--paper);
+      text-align: left;
+    }
+
+    .frame-comparison-table tbody td {
+      padding: 18px 6px;
+    }
+
+    .frame-model {
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .frame-sample {
+      overflow: hidden;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      background: var(--paper);
+    }
+
+    .frame-sample-image {
+      display: grid;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      place-items: center;
+      background: #161718;
+    }
+
+    .frame-sample img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .frame-sample figcaption {
+      padding: 6px 8px;
+      color: var(--ink-soft);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.64rem;
+    }
+
+    .frame-comparison>figcaption {
+      padding-top: 13px;
+      color: var(--ink-soft);
+      font-size: 0.78rem;
+    }
+
+    .demo-subheading {
+      margin-bottom: 8px;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .demo-subheading-copy {
+      max-width: 760px;
+      margin-bottom: 20px;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 880px) {
+      .frame-comparison-table {
+        min-width: 680px;
+      }
+
+      .frame-comparison-table col:first-child {
+        width: 118px;
+      }
+    }
+
+    @media print {
+
+      .site-nav,
+      .model-tabs,
+      .video-panel {
+        display: none !important;
+      }
+
+      .section,
+      .hero {
+        padding: 32px 0;
+      }
+
+      .section--dark,
+      .hero {
+        background: white;
+        color: black;
+      }
+
+      .demo-main {
+        display: block;
+      }
+
+      .frame-comparison-scroll {
+        overflow: visible;
+      }
+
+      .frame-comparison-table {
+        min-width: 0;
+      }
+
+      .frame-comparison-table tr {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <nav class="site-nav" aria-label="Primary navigation">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="PianoBench home">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+        PIANOBENCH
+      </a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="navLinks"
+        aria-label="Open navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+      <ul class="nav-links" id="navLinks" data-open="false">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#tasks">Tasks</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="#method">Method</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">Benchmark for generated piano video</span>
+        <h1>PianoBench</h1>
+        <p class="hero-deck">
+          PianoBench evaluates whether text-to-video outputs reproduce requested piano notes,
+          visible key presses, and audio-visual timing.
+        </p>
+        <div class="hero-stats" aria-label="Benchmark statistics">
+          <div class="hero-stat"><strong>50</strong><span>Prompt IDs scored</span></div>
+          <div class="hero-stat"><strong>7</strong><span>Evaluated systems</span></div>
+          <div class="hero-stat"><strong>5</strong><span>Prompt levels</span></div>
+          <div class="hero-stat"><strong>3</strong><span>Component scores</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="section" id="overview">
+      <div class="container">
+        <div class="abstract-grid">
+          <div class="abstract-title">
+            <span class="eyebrow">Overview</span>
+            <h2>What PianoBench measures</h2>
+            <p>Controlled piano prompts make errors in generated notes, visible actions, and audio-visual timing
+              measurable.</p>
+          </div>
+          <div class="abstract-copy">
+            <p>
+              A generated piano video can contain an incorrect pitch, an extra note, a missing key
+              press, or a mismatch between sound and motion. PianoBench reports these error types
+              separately rather than only as a general quality score.
+            </p>
+            <p>
+              Every prompt pairs a constrained overhead performance with a machine-readable event
+              target. The benchmark then evaluates acoustic content, visible execution, and
+              cross-modal timing independently.
+            </p>
+          </div>
+        </div>
+
+        <div class="metric-grid" aria-label="PianoBench evaluation dimensions">
+          <article class="metric-card">
+            <div class="metric-top">
+              <span class="metric-index">01</span>
+              <span class="metric-weight">35% aggregate weight</span>
+            </div>
+            <h3>Audio accuracy</h3>
+            <p>Measures event count, pitch, order, onset timing, and duration from the generated audio.</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top">
+              <span class="metric-index">02</span>
+              <span class="metric-weight">35% aggregate weight</span>
+            </div>
+            <h3>Visual accuracy</h3>
+            <p>Checks visible note identity, key travel, event order, extra presses, and the one-hand constraint.</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top">
+              <span class="metric-index">03</span>
+              <span class="metric-weight">30% aggregate weight</span>
+            </div>
+            <h3>Audio-visual alignment</h3>
+            <p>Pairs acoustic onsets with visible press events and scores their temporal agreement.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--ivory" id="tasks">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Prompt suite</span>
+            <h2>Five prompt families with increasing event complexity</h2>
+          </div>
+          <p>
+            Each family contains five controlled prompts. Camera, keyboard, hand count, and acoustic
+            setting stay fixed while the requested musical structure changes.
+          </p>
+        </div>
+
+        <ol class="task-grid">
+          <li class="task-card">
+            <span class="task-number">Level 01 · 5 prompts</span>
+            <h3>Single notes</h3>
+            <p>Tests isolated pitch identity, a prescribed onset, and a visible half-second hold.</p>
+            <div class="target"><span>Example</span><code>C4 @ 3.0 s × 0.5 s</code></div>
+          </li>
+          <li class="task-card">
+            <span class="task-number">Level 02 · 5 prompts</span>
+            <h3>Ascending sequences</h3>
+            <p>Tests whether separate notes appear in the requested increasing order without extras.</p>
+            <div class="target"><span>Example</span><code>C4 → D4 → E4 → F4</code></div>
+          </li>
+          <li class="task-card">
+            <span class="task-number">Level 03 · 5 prompts</span>
+            <h3>Descending sequences</h3>
+            <p>Reverses the direction while preserving count and distinct key motion.</p>
+            <div class="target"><span>Example</span><code>F4 → E4 → D4 → C4</code></div>
+          </li>
+          <li class="task-card">
+            <span class="task-number">Level 04 · 5 prompts</span>
+            <h3>Repeated notes</h3>
+            <p>Requires complete release and a new visible activation for repeated pitches.</p>
+            <div class="target"><span>Example</span><code>C4 → C4 → E4 → C4</code></div>
+          </li>
+          <li class="task-card">
+            <span class="task-number">Level 05 · 5 prompts</span>
+            <h3>Chords</h3>
+            <p>Tests simultaneity within each group and ordering between multiple chord events.</p>
+            <div class="target"><span>Example</span><code>(C4+E4) → (F4+A4)</code></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section section--dark" id="results">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Current pilot</span>
+            <h2>Pilot results across evaluation dimensions</h2>
+          </div>
+          <p>
+            The chart reports the stored averages for the evaluated systems. The results are grouped by
+            audio accuracy, visual accuracy, and audio-visual alignment.
+          </p>
+        </div>
+
+        <div class="leaderboard-card">
+          <div class="leaderboard-toolbar">
+            <h3>Model-level macro averages</h3>
+            <div class="metric-switcher" role="group" aria-label="Choose leaderboard metric">
+              <button type="button" data-metric="overall" aria-pressed="true">Overall</button>
+              <button type="button" data-metric="audio">Audio</button>
+              <button type="button" data-metric="visual">Visual</button>
+              <button type="button" data-metric="sync">AV alignment</button>
+            </div>
+          </div>
+          <div class="leaderboard">
+            <div class="leaderboard-head" aria-hidden="true">
+              <span>Rank</span><span>System</span><span id="metricColumnLabel">Overall score</span><span>Score</span>
+            </div>
+            <div id="leaderboardRows" aria-live="polite"></div>
+            <noscript>
+              <p>Enable JavaScript to switch leaderboard metrics. Overall: Gemini 0.550; Cosmos 3 0.510; Cosmos 3
+                Super 0.436; JoyAI Echo 0.400; DreamX Creator 0.339; MiniMax H3 0.447; LTX-2.5 0.448.</p>
+            </noscript>
+          </div>
+        </div>
+        <p class="results-note">
+          Scores are averages over the current stored evaluations, including additional and retry
+          evaluations; they are diagnostic examples, not statistically powered rankings. Row counts
+          are not equal across systems. The stored Cosmos 3 Prompt 4B row contains an audio fallback
+          value and should be interpreted with caution.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="examples">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Prompt 1A frames</span>
+            <h2>Sampled frames by system</h2>
+          </div>
+          <p>
+            Prompt 1A requests one middle-C press at 3.0 seconds. Each row shows an early frame,
+            the extracted frame nearest the requested press, and the final frame.
+          </p>
+        </div>
+
+        <figure class="frame-comparison" aria-labelledby="frameComparisonCaption">
+          <div class="frame-comparison-scroll" role="region" aria-label="Prompt 1A frame comparison" tabindex="0">
+            <table class="frame-comparison-table" aria-describedby="frameComparisonCaption">
+              <colgroup>
+                <col>
+                <col span="3">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">System</th>
+                  <th scope="col">Early</th>
+                  <th scope="col">Nearest 3.0 s</th>
+                  <th scope="col">Final</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th class="frame-model" scope="row">Gemini</th>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/gemini/frame_01_0.626s.jpg" width="1280"
+                          height="720" loading="lazy"
+                          alt="Gemini output: a realistic hand over the middle piano keys in the early frame"></div>
+                      <figcaption><time datetime="PT0.626S">0.626 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/gemini/frame_03_3.128s.jpg" width="1280"
+                          height="720" loading="lazy"
+                          alt="Gemini output: a realistic hand positioned over the middle keys near the requested press">
+                      </div>
+                      <figcaption><time datetime="PT3.128S">3.128 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/gemini/frame_08_9.384s.jpg" width="1280"
+                          height="720" loading="lazy"
+                          alt="Gemini output: one hand over the middle keys with another hand entering in the final frame">
+                      </div>
+                      <figcaption><time datetime="PT9.384S">9.384 s</time></figcaption>
+                    </figure>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="frame-model" scope="row">Cosmos 3</th>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/cosmos3/frame_01_0.563s.jpg" width="1280"
+                          height="720" loading="lazy"
+                          alt="Cosmos 3 output: rendered fingertips along the lower edge of a graphic keyboard in the early frame">
+                      </div>
+                      <figcaption><time datetime="PT0.563S">0.563 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/cosmos3/frame_03_2.814s.jpg" width="1280"
+                          height="720" loading="lazy"
+                          alt="Cosmos 3 output: several fingers reaching toward central white keys near the requested press">
+                      </div>
+                      <figcaption><time datetime="PT2.814S">2.814 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/cosmos3/frame_07_7.317s.jpg" width="1280"
+                          height="720" loading="lazy"
+                          alt="Cosmos 3 output: two rendered fingers resting on separate white keys in the final frame">
+                      </div>
+                      <figcaption><time datetime="PT7.317S">7.317 s</time></figcaption>
+                    </figure>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="frame-model" scope="row">MiniMax H3</th>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/minimax-h3/frame_01_0.432s.jpg" width="1344"
+                          height="768" loading="lazy"
+                          alt="MiniMax H3 output: an overhead hand spread across the piano keys in the early frame">
+                      </div>
+                      <figcaption><time datetime="PT0.432S">0.432 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/minimax-h3/frame_04_3.022s.jpg" width="1344"
+                          height="768" loading="lazy"
+                          alt="MiniMax H3 output: an overhead hand above the middle register near the requested press">
+                      </div>
+                      <figcaption><time datetime="PT3.022S">3.022 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/minimax-h3/frame_06_4.748s.jpg" width="1344"
+                          height="768" loading="lazy"
+                          alt="MiniMax H3 output: an overhead hand remaining across the piano keys in the final frame">
+                      </div>
+                      <figcaption><time datetime="PT4.748S">4.748 s</time></figcaption>
+                    </figure>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="frame-model" scope="row">Cosmos 3 Super</th>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/cosmos3-super/frame_01_0.563s.jpg"
+                          width="1280" height="720" loading="lazy"
+                          alt="Cosmos 3 Super output: generated fingers below the keyboard in the early frame"></div>
+                      <figcaption><time datetime="PT0.563S">0.563 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/cosmos3-super/frame_03_2.814s.jpg"
+                          width="1280" height="720" loading="lazy"
+                          alt="Cosmos 3 Super output: generated fingers moving toward the keys near the requested press">
+                      </div>
+                      <figcaption><time datetime="PT2.814S">2.814 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/cosmos3-super/frame_07_7.317s.jpg"
+                          width="1280" height="720" loading="lazy"
+                          alt="Cosmos 3 Super output: generated fingers across the lower part of the keyboard in the final frame">
+                      </div>
+                      <figcaption><time datetime="PT7.317S">7.317 s</time></figcaption>
+                    </figure>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="frame-model" scope="row">JoyAI Echo</th>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/joyai-echo/frame_01_0.603s.jpg" width="1280"
+                          height="736" loading="lazy"
+                          alt="JoyAI Echo output: a pale hand approaching the piano keys in the early frame"></div>
+                      <figcaption><time datetime="PT0.603S">0.603 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/joyai-echo/frame_03_3.013s.jpg" width="1280"
+                          height="736" loading="lazy"
+                          alt="JoyAI Echo output: a pale hand positioned over the central keys near the requested press">
+                      </div>
+                      <figcaption><time datetime="PT3.013S">3.013 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/joyai-echo/frame_08_9.038s.jpg" width="1280"
+                          height="736" loading="lazy"
+                          alt="JoyAI Echo output: a pale hand remaining over the keyboard in the final frame"></div>
+                      <figcaption><time datetime="PT9.038S">9.038 s</time></figcaption>
+                    </figure>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="frame-model" scope="row">DreamX Creator</th>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/dreamx-creator/frame_01_0.563s.jpg"
+                          width="1248" height="704" loading="lazy"
+                          alt="DreamX Creator output: a hand reaching toward the keyboard in the early frame"></div>
+                      <figcaption><time datetime="PT0.563S">0.563 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/dreamx-creator/frame_03_2.814s.jpg"
+                          width="1248" height="704" loading="lazy"
+                          alt="DreamX Creator output: a hand over the middle register near the requested press"></div>
+                      <figcaption><time datetime="PT2.814S">2.814 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/dreamx-creator/frame_07_7.317s.jpg"
+                          width="1248" height="704" loading="lazy"
+                          alt="DreamX Creator output: a hand spanning several white keys in the final frame"></div>
+                      <figcaption><time datetime="PT7.317S">7.317 s</time></figcaption>
+                    </figure>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="frame-model" scope="row">LTX-2.5</th>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/ltx-2.5/frame_01_0.404s.jpg" width="768"
+                          height="512" loading="lazy"
+                          alt="LTX-2.5 output: a monochrome hand over the piano keys in the early frame"></div>
+                      <figcaption><time datetime="PT0.404S">0.404 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/ltx-2.5/frame_04_2.828s.jpg" width="768"
+                          height="512" loading="lazy"
+                          alt="LTX-2.5 output: a monochrome hand positioned above the keys near the requested press">
+                      </div>
+                      <figcaption><time datetime="PT2.828S">2.828 s</time></figcaption>
+                    </figure>
+                  </td>
+                  <td>
+                    <figure class="frame-sample">
+                      <div class="frame-sample-image"><img src="frames_1a/ltx-2.5/frame_05_3.636s.jpg" width="768"
+                          height="512" loading="lazy"
+                          alt="LTX-2.5 output: a monochrome hand across the keyboard in the final frame"></div>
+                      <figcaption><time datetime="PT3.636S">3.636 s</time></figcaption>
+                    </figure>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <figcaption id="frameComparisonCaption">
+            Figure 1. Three uncropped frames from each stored Prompt 1A output: an early sample,
+            the sample nearest the requested press at 3.0 seconds, and the final sample. Timestamps
+            refer to the source video.
+          </figcaption>
+        </figure>
+
+        <h3 class="demo-subheading">Video and score details</h3>
+        <p class="demo-subheading-copy">
+          Select a system and level to play an example video and view its component scores. Prompt 1A
+          also includes extracted frames that can be used to seek through the video.
+        </p>
+
+        <div class="demo-shell">
+          <div class="model-tabs" role="tablist" aria-label="Prompt 1A model outputs">
+            <button class="model-tab" type="button" role="tab" data-model="gemini" aria-controls="demoPanel"
+              aria-selected="true">Gemini</button>
+            <button class="model-tab" type="button" role="tab" data-model="cosmos3" aria-controls="demoPanel"
+              aria-selected="false" tabindex="-1">Cosmos 3</button>
+            <button class="model-tab" type="button" role="tab" data-model="minimax-h3" aria-controls="demoPanel"
+              aria-selected="false" tabindex="-1">MiniMax H3</button>
+            <button class="model-tab" type="button" role="tab" data-model="cosmos3-super" aria-controls="demoPanel"
+              aria-selected="false" tabindex="-1">Cosmos 3 Super</button>
+            <button class="model-tab" type="button" role="tab" data-model="joyai-echo" aria-controls="demoPanel"
+              aria-selected="false" tabindex="-1">JoyAI Echo</button>
+            <button class="model-tab" type="button" role="tab" data-model="dreamx-creator" aria-controls="demoPanel"
+              aria-selected="false" tabindex="-1">DreamX Creator</button>
+            <button class="model-tab" type="button" role="tab" data-model="ltx-2.5" aria-controls="demoPanel"
+              aria-selected="false" tabindex="-1">LTX-2.5</button>
+          </div>
+
+          <div class="level-tabs" id="levelTabs" role="tablist" aria-label="Video examples by benchmark level">
+            <button class="level-tab" type="button" role="tab" data-level="1" aria-selected="true">Level 1</button>
+            <button class="level-tab" type="button" role="tab" data-level="2" aria-selected="false">Level 2</button>
+            <button class="level-tab" type="button" role="tab" data-level="3" aria-selected="false">Level 3</button>
+            <button class="level-tab" type="button" role="tab" data-level="4" aria-selected="false">Level 4</button>
+            <button class="level-tab" type="button" role="tab" data-level="5" aria-selected="false">Level 5</button>
+          </div>
+
+          <div class="demo-main" id="demoPanel" role="tabpanel" aria-label="Selected level video example">
+            <div class="video-panel">
+              <div class="video-frame">
+                <span class="video-label" id="videoLabel">Gemini · 10.01 s</span>
+                <video id="demoVideo" controls playsinline preload="metadata" aria-labelledby="videoLabel"
+                  poster="frames_1a/gemini/frame_03_3.128s.jpg">
+                  <source id="demoSource" src="data/videos/gemini/level1/1a.mp4" type="video/mp4">
+                  Your browser does not support embedded MP4 video.
+                </video>
+              </div>
+            </div>
+
+            <aside class="prompt-panel">
+              <span class="prompt-id" id="promptId">Prompt 1A · Single note</span>
+              <h3 id="promptTitle">Press C4 once.</h3>
+              <p class="prompt-summary" id="promptSummary">
+                Begin at rest. At 3.0 seconds, press middle C once, hold for 0.5 seconds,
+                release completely, and produce no other visible or audible event.
+              </p>
+              <div class="timeline" aria-label="Prompt timeline: rest, press at 3 seconds, release at 3.5 seconds">
+                <span class="timeline-part">Rest · 0–3 s</span>
+                <span class="timeline-part">Press</span>
+                <span class="timeline-part">Release</span>
+              </div>
+              <div class="selected-model">
+                <span>Selected output</span>
+                <strong id="selectedModelName">Gemini</strong>
+              </div>
+              <div class="demo-scores" aria-label="Prompt 1A scores for selected model">
+                <div class="demo-score"><span>Audio</span><strong id="demoAudio">0.986</strong></div>
+                <div class="demo-score"><span>Visual</span><strong id="demoVisual">0.550</strong></div>
+                <div class="demo-score"><span>AV align</span><strong id="demoSync">0.740</strong></div>
+                <div class="demo-score"><span>Overall</span><strong id="demoOverall">0.760</strong></div>
+              </div>
+            </aside>
+          </div>
+
+          <div class="storyboard-wrap">
+            <div class="storyboard-head">
+              <strong id="storyboardTitle">Gemini frame sequence</strong>
+              <span>Choose a frame to seek the video</span>
+            </div>
+            <div class="storyboard" id="storyboard">
+              <button class="story-frame" type="button" aria-label="Seek to 0.626 seconds">
+                <img src="frames_1a/gemini/frame_01_0.626s.jpg" alt="Gemini Prompt 1A frame at 0.626 seconds">
+                <time datetime="PT0.626S">0.626 s</time>
+              </button>
+              <button class="story-frame" type="button" aria-label="Seek to 3.128 seconds">
+                <img src="frames_1a/gemini/frame_03_3.128s.jpg" alt="Gemini Prompt 1A frame at 3.128 seconds">
+                <time datetime="PT3.128S">3.128 s</time>
+              </button>
+              <button class="story-frame" type="button" aria-label="Seek to 9.384 seconds">
+                <img src="frames_1a/gemini/frame_08_9.384s.jpg" alt="Gemini Prompt 1A frame at 9.384 seconds">
+                <time datetime="PT9.384S">9.384 s</time>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--ivory" id="method">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Evaluation pipeline</span>
+            <h2>How the three component scores are computed</h2>
+          </div>
+          <p>
+            Prompt expectations and generated videos feed separate audio and visual analyzers.
+            Detected events are then paired to measure synchronization.
+          </p>
+        </div>
+
+        <div class="pipeline" aria-label="Evaluation pipeline">
+          <div class="pipeline-node pipeline-node--input">
+            <small>Inputs</small>
+            <strong>Prompt + event expectation</strong>
+            <span>Pitch, count, order, timing, duration, and chord groups</span>
+          </div>
+          <div class="pipeline-arrow" aria-hidden="true">→</div>
+          <div class="pipeline-fork">
+            <div class="pipeline-node">
+              <small>Branch A</small>
+              <strong>Audio event analysis</strong>
+            </div>
+            <div class="pipeline-node">
+              <small>Branch B</small>
+              <strong>Visual action analysis</strong>
+            </div>
+          </div>
+          <div class="pipeline-arrow" aria-hidden="true">→</div>
+          <div class="pipeline-node pipeline-node--output">
+            <small>Outputs</small>
+            <strong>Three interpretable scores</strong>
+            <span>Audio accuracy · visual accuracy · AV alignment</span>
+          </div>
+        </div>
+
+        <div class="method-grid">
+          <article class="method-card">
+            <span class="method-weight">0.35 × audio</span>
+            <h3>Acoustic events</h3>
+            <p>Onset detection and pitch estimation score count, pitch class, order, timing, and duration. Chords use a
+              separate multipitch path.</p>
+          </article>
+          <article class="method-card">
+            <span class="method-weight">0.35 × visual</span>
+            <h3>Visible actions</h3>
+            <p>Timestamped video frames support structured judgments of note position, press count and order, key
+              travel, extras, and hand count.</p>
+          </article>
+          <article class="method-card">
+            <span class="method-weight">0.30 × alignment</span>
+            <h3>Cross-modal timing</h3>
+            <p>Nearest acoustic and visual events are paired. Credit tapers to zero as absolute lag approaches half a
+              second.</p>
+          </article>
+        </div>
+        <div class="formula" aria-label="Overall score formula">
+          <strong>Overall</strong> = 0.35 · Audio + 0.35 · Visual + 0.30 · AV alignment
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="scope">
+      <div class="container scope-grid">
+        <div>
+          <span class="eyebrow">Scope and limitations</span>
+          <h2>Scope and limitations</h2>
+          <p>
+            PianoBench is intentionally narrow. It is designed to identify specific error types
+            rather than measure overall video quality or musicianship.
+          </p>
+        </div>
+        <ul class="limit-list">
+          <li><span>01</span>
+            <div>Each score describes one selected output per prompt and system label; no uncertainty estimate is
+              implied.</div>
+          </li>
+          <li><span>02</span>
+            <div>The pilot focuses on one instrument, white keys in the middle register, and a constrained overhead
+              view.</div>
+          </li>
+          <li><span>03</span>
+            <div>Audio analysis is heuristic, while visual scoring depends on sparse frames and a versioned multimodal
+              judge.</div>
+          </li>
+          <li><span>04</span>
+            <div>Generation versions, seeds, retry decisions, and complete raw generation logs are not yet recorded for
+              every output.</div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <strong>PIANOBENCH · ANONYMOUS PROJECT PAGE</strong>
+      <span>50 prompt IDs · 7 systems · version 0.1.0</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var results = [
+        { name: "Gemini", audio: 0.604, visual: 0.720, sync: 0.288, overall: 0.550 },
+        { name: "Cosmos 3", audio: 0.425, visual: 0.736, sync: 0.346, overall: 0.510 },
+        { name: "MiniMax H3", audio: 0.441, visual: 0.675, sync: 0.187, overall: 0.447 },
+        { name: "Cosmos 3 Super", audio: 0.335, visual: 0.721, sync: 0.220, overall: 0.436 },
+        { name: "LTX-2.5", audio: 0.402, visual: 0.755, sync: 0.143, overall: 0.448 },
+        { name: "JoyAI Echo", audio: 0.397, visual: 0.624, sync: 0.141, overall: 0.400 },
+        { name: "DreamX Creator", audio: 0.307, visual: 0.608, sync: 0.062, overall: 0.339 }
+      ];
+
+      var metricLabels = {
+        overall: "Overall score",
+        audio: "Audio accuracy",
+        visual: "Visual accuracy",
+        sync: "AV alignment"
+      };
+
+      function buildFrames(model, timestamps) {
+        return timestamps.map(function (timestamp, index) {
+          var number = String(index + 1).padStart(2, "0");
+          return {
+            time: Number(timestamp),
+            src: "frames_1a/" + model + "/frame_" + number + "_" + timestamp + "s.jpg"
+          };
+        });
+      }
+
+      var demos = {
+        "gemini": {
+          name: "Gemini",
+          duration: "10.01 s",
+          video: "data/videos/gemini/level1/1a.mp4",
+          scores: [0.986, 0.550, 0.740, 0.760],
+          posterIndex: 2,
+          frames: buildFrames("gemini", ["0.626", "1.877", "3.128", "4.379", "5.631", "6.882", "8.133", "9.384"])
+        },
+        "cosmos3": {
+          name: "Cosmos 3",
+          duration: "7.88 s",
+          video: "data/videos/cosmos3/level1/1a.mp4",
+          scores: [0.330, 0.200, 0.000, 0.185],
+          posterIndex: 2,
+          frames: buildFrames("cosmos3", ["0.563", "1.689", "2.814", "3.940", "5.066", "6.191", "7.317"])
+        },
+        "minimax-h3": {
+          name: "MiniMax H3",
+          duration: "5.18 s",
+          video: "data/videos/minimax-h3/level1/1a.mp4",
+          scores: [0.420, 0.600, 0.000, 0.357],
+          posterIndex: 3,
+          frames: buildFrames("minimax-h3", ["0.432", "1.295", "2.158", "3.022", "3.885", "4.748"])
+        },
+        "cosmos3-super": {
+          name: "Cosmos 3 Super",
+          duration: "7.88 s",
+          video: "data/videos/cosmos3-super/level1/1a.mp4",
+          scores: [0.417, 0.600, 0.000, 0.356],
+          posterIndex: 2,
+          frames: buildFrames("cosmos3-super", ["0.563", "1.689", "2.814", "3.940", "5.066", "6.191", "7.317"])
+        },
+        "joyai-echo": {
+          name: "JoyAI Echo",
+          duration: "9.64 s",
+          video: "data/videos/joyai-echo/level1/1a.mp4",
+          scores: [0.568, 0.600, 0.039, 0.420],
+          posterIndex: 2,
+          frames: buildFrames("joyai-echo", ["0.603", "1.808", "3.013", "4.218", "5.423", "6.628", "7.833", "9.038"])
+        },
+        "dreamx-creator": {
+          name: "DreamX Creator",
+          duration: "7.88 s",
+          video: "data/videos/dreamx-creator/level1/1a.mp4",
+          scores: [0.000, 0.200, 0.000, 0.070],
+          posterIndex: 2,
+          frames: buildFrames("dreamx-creator", ["0.563", "1.689", "2.814", "3.940", "5.066", "6.191", "7.317"])
+        },
+        "ltx-2.5": {
+          name: "LTX-2.5",
+          duration: "4.04 s",
+          video: "data/videos/ltx-2.5/level1/1a.mp4",
+          scores: [0.490, 0.200, 0.000, 0.241],
+          posterIndex: 3,
+          frames: buildFrames("ltx-2.5", ["0.404", "1.212", "2.020", "2.828", "3.636"])
+        }
+      };
+
+      var levelDetails = {
+        1: { label: "Single note", title: "Press C4 once.", summary: "A single requested note with a press at 3.0 seconds and a 0.5-second hold." },
+        2: { label: "Ascending sequence", title: "Play an ascending sequence.", summary: "A sequence of separate notes in increasing order." },
+        3: { label: "Descending sequence", title: "Play a descending sequence.", summary: "A sequence of separate notes in decreasing order." },
+        4: { label: "Repeated notes", title: "Play repeated notes.", summary: "Repeated pitches that require distinct presses and releases." },
+        5: { label: "Chords", title: "Play two chords.", summary: "Two chord groups with simultaneous notes within each group." }
+      };
+
+      var levelScores = {
+        "gemini": [[0.986, 0.550, 0.740, 0.760], [0.631, 0.400, 0.201, 0.421], [0.588, 0.650, 0.093, 0.461], [0.708, 1.000, 0.486, 0.744], [0.403, 1.000, 0.000, 0.491]],
+        "cosmos3": [[0.330, 0.200, 0.000, 0.185], [0.508, 1.000, 0.450, 0.663], [0.616, 0.725, 0.098, 0.499], [0.450, 1.000, 0.058, 0.525], [0.212, 0.500, 0.189, 0.306]],
+        "minimax-h3": [[0.420, 0.600, 0.000, 0.357], [0.375, 1.000, 0.005, 0.483], [0.487, 1.000, 0.005, 0.522], [0.454, 0.533, 0.256, 0.422], [0.256, 0.600, 0.060, 0.318]],
+        "cosmos3-super": [[0.417, 0.600, 0.000, 0.356], [0.466, 0.600, 0.487, 0.519], [0.487, 0.550, 0.242, 0.436], [0.283, 0.533, 0.214, 0.350], [0.209, 0.850, 0.492, 0.518]],
+        "joyai-echo": [[0.568, 0.600, 0.039, 0.420], [0.508, 0.350, 0.000, 0.300], [0.443, 0.900, 0.206, 0.532], [0.650, 0.667, 0.086, 0.487], [0.324, 0.750, 0.000, 0.376]],
+        "dreamx-creator": [[0.000, 0.200, 0.000, 0.070], [0.263, 0.500, 0.146, 0.311], [0.325, 0.650, 0.000, 0.341], [0.388, 0.500, 0.000, 0.311], [0.205, 0.500, 0.344, 0.350]],
+        "ltx-2.5": [[0.490, 0.200, 0.000, 0.241], [0.388, 0.500, 0.115, 0.345], [0.263, 0.675, 0.000, 0.328], [0.367, 0.767, 0.000, 0.397], [0.367, 1.000, 0.000, 0.478]]
+      };
+
+      var leaderboardRows = document.getElementById("leaderboardRows");
+      var metricColumnLabel = document.getElementById("metricColumnLabel");
+      var metricButtons = Array.prototype.slice.call(document.querySelectorAll("[data-metric]"));
+
+      function renderLeaderboard(metric) {
+        var sorted = results.slice().sort(function (a, b) {
+          return b[metric] - a[metric];
+        });
+        leaderboardRows.replaceChildren();
+        metricColumnLabel.textContent = metricLabels[metric];
+
+        sorted.forEach(function (entry, index) {
+          var row = document.createElement("div");
+          row.className = "leader-row";
+          row.setAttribute("role", "group");
+          row.setAttribute("aria-label", (index + 1) + ". " + entry.name + ", " + metricLabels[metric] + " " + entry[metric].toFixed(3));
+
+          var rank = document.createElement("span");
+          rank.className = "leader-rank";
+          rank.textContent = String(index + 1).padStart(2, "0");
+
+          var model = document.createElement("span");
+          model.className = "leader-model";
+          model.textContent = entry.name;
+
+          var track = document.createElement("span");
+          track.className = "bar-track";
+          track.setAttribute("aria-hidden", "true");
+          var fill = document.createElement("span");
+          fill.className = "bar-fill";
+          fill.style.width = (entry[metric] * 100).toFixed(1) + "%";
+          track.appendChild(fill);
+
+          var value = document.createElement("span");
+          value.className = "leader-value";
+          value.textContent = entry[metric].toFixed(3);
+
+          row.append(rank, model, track, value);
+          leaderboardRows.appendChild(row);
+        });
+      }
+
+      metricButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          metricButtons.forEach(function (candidate) {
+            candidate.setAttribute("aria-pressed", String(candidate === button));
+          });
+          renderLeaderboard(button.dataset.metric);
+        });
+      });
+      renderLeaderboard("overall");
+
+      var demoVideo = document.getElementById("demoVideo");
+      var demoSource = document.getElementById("demoSource");
+      var modelTabs = Array.prototype.slice.call(document.querySelectorAll(".model-tab"));
+      var levelTabs = Array.prototype.slice.call(document.querySelectorAll(".level-tab"));
+      var storyboard = document.getElementById("storyboard");
+      var storyboardTitle = document.getElementById("storyboardTitle");
+      var selectedModelName = document.getElementById("selectedModelName");
+      var videoLabel = document.getElementById("videoLabel");
+      var promptId = document.getElementById("promptId");
+      var promptTitle = document.getElementById("promptTitle");
+      var promptSummary = document.getElementById("promptSummary");
+      var currentLevel = 1;
+      var selectedModelId = "gemini";
+      var scoreTargets = [
+        document.getElementById("demoAudio"),
+        document.getElementById("demoVisual"),
+        document.getElementById("demoSync"),
+        document.getElementById("demoOverall")
+      ];
+
+      function renderStoryboard(demo) {
+        storyboard.replaceChildren();
+        demo.frames.forEach(function (frame) {
+          var button = document.createElement("button");
+          button.className = "story-frame";
+          button.type = "button";
+          button.dataset.time = String(frame.time);
+          button.setAttribute("aria-label", "Seek " + demo.name + " video to " + frame.time.toFixed(3) + " seconds");
+          button.setAttribute("aria-current", "false");
+
+          var image = document.createElement("img");
+          image.src = frame.src;
+          image.alt = demo.name + " Prompt 1A frame at " + frame.time.toFixed(3) + " seconds";
+          image.loading = "lazy";
+
+          var time = document.createElement("time");
+          time.textContent = frame.time.toFixed(3) + " s";
+          time.dateTime = "PT" + frame.time.toFixed(3) + "S";
+
+          button.append(image, time);
+          button.addEventListener("click", function () {
+            demoVideo.currentTime = frame.time;
+            demoVideo.pause();
+            updateCurrentFrame();
+          });
+          storyboard.appendChild(button);
+        });
+      }
+
+      function selectDemo(modelId) {
+        var demo = demos[modelId];
+        if (!demo) {
+          return;
+        }
+
+        selectedModelId = modelId;
+        var details = levelDetails[currentLevel];
+        var scores = levelScores[modelId][currentLevel - 1];
+        demoVideo.pause();
+        demoSource.src = currentLevel === 1
+          ? demo.video
+          : "data/videos/" + modelId + "/level" + currentLevel + "/" + currentLevel + "a.mp4";
+        demoVideo.poster = currentLevel === 1 ? demo.frames[demo.posterIndex].src : "";
+        demoVideo.load();
+
+        videoLabel.textContent = demo.name + " · Level " + currentLevel;
+        selectedModelName.textContent = demo.name;
+        promptId.textContent = "Prompt " + currentLevel + "A · " + details.label;
+        promptTitle.textContent = details.title;
+        promptSummary.textContent = details.summary;
+        storyboardTitle.textContent = currentLevel === 1
+          ? demo.name + " frame sequence"
+          : "Level " + currentLevel + " video example";
+        scoreTargets.forEach(function (target, index) {
+          target.textContent = scores[index].toFixed(3);
+        });
+
+        modelTabs.forEach(function (tab) {
+          var selected = tab.dataset.model === modelId;
+          tab.setAttribute("aria-selected", String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+        });
+        if (currentLevel === 1) {
+          renderStoryboard(demo);
+        } else {
+          storyboard.replaceChildren();
+        }
+      }
+
+      function updateCurrentFrame() {
+        var frames = Array.prototype.slice.call(storyboard.querySelectorAll(".story-frame"));
+        var current = demoVideo.currentTime;
+        var closest = null;
+        var smallestDistance = Infinity;
+
+        frames.forEach(function (frame) {
+          var distance = Math.abs(Number(frame.dataset.time) - current);
+          if (distance < smallestDistance) {
+            smallestDistance = distance;
+            closest = frame;
+          }
+        });
+
+        frames.forEach(function (frame) {
+          frame.setAttribute("aria-current", String(frame === closest));
+        });
+      }
+
+      modelTabs.forEach(function (tab, index) {
+        tab.addEventListener("click", function () {
+          selectDemo(tab.dataset.model);
+        });
+        tab.addEventListener("keydown", function (event) {
+          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+            return;
+          }
+          event.preventDefault();
+          var direction = event.key === "ArrowRight" ? 1 : -1;
+          var nextIndex = (index + direction + modelTabs.length) % modelTabs.length;
+          modelTabs[nextIndex].focus();
+          selectDemo(modelTabs[nextIndex].dataset.model);
+        });
+      });
+
+      levelTabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          currentLevel = Number(tab.dataset.level);
+          levelTabs.forEach(function (candidate) {
+            candidate.setAttribute("aria-selected", String(candidate === tab));
+          });
+          selectDemo(selectedModelId);
+        });
+      });
+      demoVideo.addEventListener("timeupdate", updateCurrentFrame);
+      selectDemo("gemini");
+
+      var menuToggle = document.getElementById("menuToggle");
+      var navLinks = document.getElementById("navLinks");
+
+      function closeMenu() {
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Open navigation");
+        navLinks.dataset.open = "false";
+        document.body.classList.remove("menu-open");
+      }
+
+      menuToggle.addEventListener("click", function () {
+        var open = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!open));
+        menuToggle.setAttribute("aria-label", open ? "Open navigation" : "Close navigation");
+        navLinks.dataset.open = String(!open);
+        document.body.classList.toggle("menu-open", !open);
+      });
+
+      Array.prototype.forEach.call(navLinks.querySelectorAll("a"), function (link) {
+        link.addEventListener("click", closeMenu);
+      });
+
+      window.addEventListener("resize", function () {
+        if (window.innerWidth > 720) {
+          closeMenu();
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && menuToggle.getAttribute("aria-expanded") === "true") {
+          closeMenu();
+          menuToggle.focus();
+        }
+      });
+
+    }());
+  </script>
+</body>
+
+</html>
