@@ -1,8 +1,8 @@
 # PianoBench
 
-PianoBench is a small website for viewing generated piano-video examples and their audio, visual, and audio-visual scores.
+PianoBench is a project evaluating generated piano-video examples and their audio, visual, and audio-visual scores.
 
-The current page presents:
+The current index.html page presents:
 
 - 50 prompt IDs across five task levels;
 - seven evaluated systems;
@@ -19,4 +19,4 @@ The benchmark levels are:
 4. Repeated notes
 5. Chords
 
-The page is anonymous and does not expose local usernames or machine-specific paths.
+The page is anonymous.
